@@ -2,20 +2,81 @@ import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import assets from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useState } from 'react';
+
 const LoginPage = () => {
+  const [email,setEmail]=useState();
+  const [password,setPassword]=useState();
   const { loginWithPopup, logout, user, isAuthenticated } = useAuth0();
   const navigate=useNavigate();
-  const handleLogin = async (provider) => {
-  try {
-    await loginWithPopup({ connection: provider });
-    navigate('/');
-  } catch (err) {
-    console.error("Login failed:", err);
+
+  // const handleLogin=async (provider) => {
+  // try {
+  //   await loginWithPopup({ connection: provider });
+  //   // if(user && isAuthenticated){
+  //   //      saveOAuthUser(user);
+  //   // }
+  //   toast.success("Login successfull through"+provider)
+  //   navigate('/');
+  // } catch (err) {
+  //   toast.error("Login failed");
+  // }
+  // };
+
+
+  // const saveOAuthUser=async()=>{
+  //      try{
+  //          const response=await axios.post("http://localhost:8080/api/login")
+  //      }
+  //      catch(error){
+  //         toast.error("Login failed");
+  //      }
+  // }
+
+  const emailChange=(e)=>{
+     setEmail(e.target.value);
   }
-};
+
+  const passwordChange=(e)=>{
+     setPassword(e.target.value);
+  }
+
+  const submitHandler=async(e)=>{
+    e.preventDefault();
+    try{
+         const response=await axios.post("http://localhost:8080/api/login",
+              {email,password},
+              { 
+                headers:{
+                "Content-type":"application/json"
+              }
+            },
+         )
+         if(response.data){
+            toast.success("Login successfull");
+            navigate("/home");
+         }
+    }
+    catch(error){
+        if(error.response){
+            toast.error(error.response.data.message || "Login failed")
+        }
+        else if(error.request){
+           toast.error("No response from the server.Please check your connection")
+        }
+        else{
+           toast.error("An unexpected error occured.Please try again")
+        }
+    }
+  }
+
+
   return (
    <div className="min-h-screen bg-center bg-cover relative flex items-center justify-center">
       {/* Background image with reduced brightness and blur */}
+      <form onSubmit={submitHandler}>
       <div
         className="absolute inset-0 bg-center bg-cover brightness-30 backdrop-blur-sm z-0"
         style={{
@@ -32,25 +93,28 @@ const LoginPage = () => {
         <img src={assets.logo} alt="Logo" className="w-36 mx-auto drop-shadow-xl" />
 
         <h2 className="text-3xl font-bold text-white">Welcome to ChatApp 👋</h2>
-        <p className="text-gray-400 text-sm">Sign in with your account</p>
+        <p className="text-gray-400 text-sm">Log in with your account</p>
 
-        {/* Placeholder for future email/password */}
+       
         <input
+          onChange={emailChange}
           type="email"
           placeholder="Email address"
           className="w-full px-4 py-3 rounded-xl bg-gray-900 text-white border border-gray-700 focus:outline-none"
         />
         <input
+          onChange={passwordChange}
           type="password"
           placeholder="Password"
           className="w-full px-4 py-3 rounded-xl bg-gray-900 text-white border border-gray-700 focus:outline-none"
         />
-        <button className="w-full px-4 py-3 mt-2 bg-purple-800 text-white font-semibold rounded-xl cursor-not-allowed opacity-50">
-          Sign in (Coming Soon)
+        <button className="w-full px-4 py-3 mt-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-xl  opacity-50">
+          Log in 
         </button>
 
-        <div className="text-gray-400 text-sm">or continue with</div>
+        {/* <div className="text-gray-400 text-sm">or continue with</div>
         <div className="space-y-4">
+   <div className="flex flex-col sm:flex-row sm:justify-center gap-4">       
   <button
     onClick={()=>handleLogin('google-oauth2')}
     className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white text-black font-medium rounded-xl shadow hover:bg-gray-100 transition"
@@ -74,7 +138,8 @@ const LoginPage = () => {
     />
     GitHub
   </button>
-</div>
+  </div>  
+ </div> */}
 
         {isAuthenticated && (
           <div className="text-gray-300 text-sm pt-4 border-t border-gray-700 mt-4">
@@ -91,6 +156,7 @@ const LoginPage = () => {
           </div>
         )}
       </div>
+      </form>
     </div>
   );
 };
