@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
 import SignUpPage from './pages/SignUpPage';
 import {Toaster}  from 'react-hot-toast';
+import SettingsPage from './pages/settingsPage';
+
 const App = () => {
   return (
     <div className="relative min-h-screen">
@@ -18,6 +20,7 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<SignUpPage />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/settings" element={<SettingsPage/>} />
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </div>

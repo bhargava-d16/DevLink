@@ -1,19 +1,17 @@
 import React from 'react';
 import assets, { userDummyData } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
-
+import { Plus } from 'lucide-react';
 const SideBar = ({ selectedUser, setselectedUser }) => {
   const navigate = useNavigate();
 
 return (
- <div>
-
-      <div className="flex justify-between items-center px-3">
+ <div className='flex flex-col h-full'>
+   <div className="flex justify-between items-center px-3">
         <img src={assets.logo} alt="logo" className="max-w-40" />
-
         <div className="relative py-2 group">
           <img
-            src={assets.menu_icon}
+            src={assets.menu_icon} 
             alt="menu"
             className="h-6 w-6 cursor-pointer"
           />
@@ -22,12 +20,12 @@ return (
               onClick={() => navigate('/profile')}
               className="cursor-pointer text-sm hover:text-purple-300"
             >
-              Edit Profile
+              Edit Profile 
             </p>
             <hr className="my-2 border-t border-gray-500" />
             <p
               onClick={() => {
-                // Add logout logic here
+                  navigate("/home")
               }}
               className="cursor-pointer text-sm hover:text-red-400"
             >
@@ -42,6 +40,7 @@ return (
       <div className="bg-[#282142] rounded-full flex items-center gap-2 py-3 px-4 mt-5 mx-3 shadow-inner border border-gray-600">
         <img src={assets.search_icon} alt="search" className="w-4" />
         <input
+          
           type="text"
           placeholder="Search"
           className="bg-transparent border-none outline-none text-white text-sm placeholder:text-[#c8c8c8] w-full"
@@ -79,7 +78,15 @@ return (
 ))}
 </div>
 
-
+       <div className="flex justify-end p-4 mt-50 ">
+        <button
+          className="w-12 h-12 flex items-center justify-center bg-violet-600 hover:bg-violet-700 text-white rounded-full shadow-lg transition duration-200"
+          onClick={() => alert("Add user")}
+        >
+          <Plus size={24} />
+        </button>
+      </div>
+      
 </div>
   );
 };

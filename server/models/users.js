@@ -15,8 +15,13 @@ const UserSchema=new mongoose.Schema({
          type:String,
          required:true,
          unique:true,
-       }
-})
+       },
+       profilePic:{
+         type:String,
+         default:""
+       },
+      },{timestamps:true}
+      )
 
 const UserModel=mongoose.model("Users",UserSchema);
 module.exports=UserModel;

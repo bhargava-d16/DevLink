@@ -9,7 +9,7 @@ import { useState } from 'react';
 const LoginPage = () => {
   const [email,setEmail]=useState();
   const [password,setPassword]=useState();
-  const { loginWithPopup, logout, user, isAuthenticated } = useAuth0();
+  // const { loginWithPopup, logout, user, isAuthenticated } = useAuth0();
   const navigate=useNavigate();
 
   // const handleLogin=async (provider) => {
@@ -141,7 +141,7 @@ const LoginPage = () => {
   </div>  
  </div> */}
 
-        {isAuthenticated && (
+        {/* {isAuthenticated && (
           <div className="text-gray-300 text-sm pt-4 border-t border-gray-700 mt-4">
             Logged in as <strong>{user?.name || user?.email}</strong>
             <br />
@@ -154,7 +154,7 @@ const LoginPage = () => {
               Logout
             </button>
           </div>
-        )}
+        )} */}
       </div>
       </form>
     </div>

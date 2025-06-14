@@ -5,9 +5,13 @@ const app=express();
 const cors = require('cors');
 const PORT=process.env.PORT || 8080;
 const bodyParser=require('body-parser');
-const { connectDB } = require("./utils/db");
-const registerUser = require("./controllers/signUp");
-const loginUser = require("./controllers/login");
+const { connectDB } = require("./libs/db");
+// const router =require("./routes/authRoutes")
+const Authroutes =require("./routes/authRoutes");
+const cookieParser = require("cookie-parser");
+const messageRoutes = require("./routes/messageroutes");
+
+
 const startServer = async () => {
   try {
     console.log("Connecting to MongoDB...");
@@ -19,13 +23,19 @@ const startServer = async () => {
   }
 };
 startServer();
+
+
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
-app.post("/api/signUp",registerUser)
-app.post("/api/login",loginUser) 
+
+
+app.use("/api",Authroutes)
+app.use("/api/message",messageRoutes)
+
 app.listen(PORT,()=>{
     console.log(`Server running on port ${PORT}`)
 })
