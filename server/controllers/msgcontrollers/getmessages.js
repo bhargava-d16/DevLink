@@ -12,6 +12,7 @@ const getMessage = async(req,res)=>{
                 {senderId:usertoChatId,receiverId:myId}
             ]
         })
+        console.log(messages);
         res.status(200).json(messages);
      }
      catch{

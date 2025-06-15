@@ -1,7 +1,7 @@
 const UserModel = require("../../models/users");
 
 const getUsers=async(req,res)=>{
-     try{
+     try{ 
          const userId=req.user._id;
          const usersList=await UserModel.find({_id:{$ne:userId}}).select("-password");
          res.status(200).json(usersList);

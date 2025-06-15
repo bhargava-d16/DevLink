@@ -1,10 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState ,useEffect} from 'react'
 import SideBar from '../components/SideBar'
 import ChatContainer from '../components/ChatContainer'
 import RightSideBar from '../components/RightSideBar'
-
+import { useAuth } from '../store/useAuth';
+import { useMessagesStore } from '../store/messages';
 const HomePage = () => {
-  const [selectedUser,setselectedUser]=useState(false);
+  const {selectedUser,setselectedUser}=useMessagesStore()
+  const {checkAuth} = useAuth();
+  useEffect(() => {
+        checkAuth();
+    
+      }, [checkAuth]);
   return(
     <div className='border w-screen h-screen'>
        <div className={`backdrop-blur-xl border-2 border-gray-600 overflow-hidden  rounded-2xl h-full w-full grid grid-cols-1 relative

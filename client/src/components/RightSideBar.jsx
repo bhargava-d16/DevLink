@@ -1,17 +1,27 @@
 import React from 'react';
+import { useEffect } from 'react';
 import assets, { imagesDummyData } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
-const RightSideBar = ({ selectedUser }) => {
-  if (!selectedUser) return null;
+import { useAuth } from '../store/useAuth';
+import toast from 'react-hot-toast';
+import { useMessagesStore } from '../store/messages';
+const RightSideBar = () => {
+
+const {selectedUser,setselectedUser,getusers,getAllusers}=useMessagesStore()
+
+if (!selectedUser) return null;
   const navigate=useNavigate()
-  const HandleLogout=()=>{
-      
-      navigate("/login")
+  const {logout} =useAuth();
+  const HandleLogout=async()=>{
+      await logout();
+      navigate('/login')
 }
+
+
 
   return (
     <div
-      className={`bg-[#8185B2]/10 text-white w-full relative overflow-y-scroll
+      className={`bg-[#8185B2]/10 overflow-y-auto text-white w-full relative overflow-y-scroll
       ${selectedUser ? 'max-md:hidden' : ''} p-4`}
     >
       <div className="pt-12 flex flex-col items-center gap-3 text-center font-light">

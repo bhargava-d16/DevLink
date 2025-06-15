@@ -1,12 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import assets, { userDummyData } from '../assets/assets';
+
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
-const SideBar = ({ selectedUser, setselectedUser }) => {
+import { useMessagesStore } from '../store/messages';
+const SideBar = () => {
   const navigate = useNavigate();
 
+  const {getusers,getAllusers,selectedUser,setselectedUser}=useMessagesStore()
+
+   useEffect(()=>{
+      const fetchUsers=async()=>{
+      try {
+         await getAllusers(selectedUser._id);
+      }
+      catch (error) {
+         console.error("Error fetching users:", error);
+      }
+      }
+      fetchUsers()
+   },[])
 return (
- <div className='flex flex-col h-full'>
+ <div className='flex flex-col h-full overflow-y-auto'>
    <div className="flex justify-between items-center px-3">
         <img src={assets.logo} alt="logo" className="max-w-40" />
         <div className="relative py-2 group">
@@ -50,7 +65,7 @@ return (
 
 
 <div className="flex flex-col mt-4 px-3 gap-3">
-        {userDummyData.map((user, index) => (
+        {getusers?.map((user, index) => (
   <div
     key={index}
     onClick={() => setselectedUser(user)}
@@ -64,7 +79,7 @@ return (
       alt="avatar"
     />
     <div className="flex flex-col leading-5">
-      <p className="text-sm font-medium text-white">{user.fullName}</p>
+      <p className="text-sm font-medium text-white">{user.username}</p>
       <p className="text-xs text-gray-400">
         {index < 3 ? 'Active now' : 'Offline'}
       </p>

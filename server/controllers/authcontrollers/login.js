@@ -29,7 +29,7 @@ const loginUser = async (req, res, next) => {
         token,
         message: "Login successfull",
         status: true,
-        username: isUser.username,
+        isUser,
       });
   } catch (err) {
     next(err);

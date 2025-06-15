@@ -1,20 +1,35 @@
 import React, { useEffect, useRef } from 'react';
 import assets, { messagesDummyData } from '../assets/assets';
 import { formatMessageTime } from '../lib/utils';
+import { useMessagesStore } from '../store/messages';
+import { useAuth } from '../store/useAuth';
 
-const ChatContainer = ({ selectedUser, setselectedUser }) => {
+const ChatContainer = () => {
+
   const scrollEnd = useRef();
-   
- useEffect(() => {
+  const {selectedUser,setselectedUser,getmessages,getAllmessages}=useMessagesStore()
+  const {authUser}=useAuth();
+  const yourId = '680f5116f10f3cd28382ed02';
+
+  useEffect(() => {
   const timer = setTimeout(() => {
     if (scrollEnd.current) {
       scrollEnd.current.scrollIntoView({ behavior: 'smooth' });
     }
   },100);  
-},[selectedUser,messagesDummyData]);
+  },[selectedUser,messagesDummyData]);
 
-
-  const yourId = '680f5116f10f3cd28382ed02';
+  useEffect(()=>{
+     const fetchMessages=async()=>{
+         try{
+          getAllmessages(selectedUser._id);
+         }
+         catch{
+           console.error("Error fetching messages:", error);
+         }
+     }
+     fetchMessages()
+  },[])
 
 
   return selectedUser ? (

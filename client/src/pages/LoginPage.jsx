@@ -5,13 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useState } from 'react';
+import { axiosInstance } from '../lib/axios';
+import { Eye, EyeOff, Loader } from 'lucide-react';
+import { useAuth } from '../store/useAuth';
 
 const LoginPage = () => {
   const [email,setEmail]=useState();
   const [password,setPassword]=useState();
+  const [isLoading,setisLoading]=useState(false);
+  const [showPassword,setshowPassword]=useState(false);
   // const { loginWithPopup, logout, user, isAuthenticated } = useAuth0();
   const navigate=useNavigate();
-
+  const {setAuthUser} =useAuth();
   // const handleLogin=async (provider) => {
   // try {
   //   await loginWithPopup({ connection: provider });
@@ -22,7 +27,7 @@ const LoginPage = () => {
   //   navigate('/');
   // } catch (err) {
   //   toast.error("Login failed");
-  // }
+  // }z
   // };
 
 
@@ -44,9 +49,10 @@ const LoginPage = () => {
   }
 
   const submitHandler=async(e)=>{
+    setisLoading(true);
     e.preventDefault();
     try{
-         const response=await axios.post("http://localhost:8080/api/login",
+         const response=await axiosInstance.post("/login",
               {email,password},
               { 
                 headers:{
@@ -55,6 +61,7 @@ const LoginPage = () => {
             },
          )
          if(response.data){
+            setAuthUser(response.data)
             toast.success("Login successfull");
             navigate("/home");
          }
@@ -69,6 +76,9 @@ const LoginPage = () => {
         else{
            toast.error("An unexpected error occured.Please try again")
         }
+    }
+    finally{
+      setisLoading(false);
     }
   }
 
@@ -102,14 +112,37 @@ const LoginPage = () => {
           placeholder="Email address"
           className="w-full px-4 py-3 rounded-xl bg-gray-900 text-white border border-gray-700 focus:outline-none"
         />
+        <div className="relative w-full">
         <input
           onChange={passwordChange}
-          type="password"
+          type={showPassword?"text":"password"}
           placeholder="Password"
           className="w-full px-4 py-3 rounded-xl bg-gray-900 text-white border border-gray-700 focus:outline-none"
         />
-        <button className="w-full px-4 py-3 mt-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-xl  opacity-50">
-          Log in 
+
+        <button
+          type="button"
+          className='absolute inset-y-0 right-0 pr-3 flex items-center'
+          onClick={()=>setshowPassword(!showPassword)}
+          >
+            {showPassword?(
+               <EyeOff className='size-5 text-base-content/40 text-white'/>
+            ):(
+                <Eye className='size-5 text-base-content/40  text-white'/>
+            )}
+        </button>
+        </div>
+
+        <button disabled={isLoading} className="w-full px-4 py-3 mt-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-xl  opacity-50">
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2">
+              <Loader className="animate-spin h-5 w-5 text-white" />
+              Logging in...
+            </div>
+          ) : (
+            'Log In'
+          )}
+
         </button>
 
         {/* <div className="text-gray-400 text-sm">or continue with</div>
