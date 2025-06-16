@@ -10,6 +10,6 @@ router.get("/users",protectRoute,getUsers);
 
 router.get("/:id",protectRoute,getMessage);
 
-router.post("/send:id",protectRoute,sendMessage)
+router.post("/send/:id",protectRoute,sendMessage)
 
 module.exports=router

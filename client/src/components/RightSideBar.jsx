@@ -7,14 +7,14 @@ import toast from 'react-hot-toast';
 import { useMessagesStore } from '../store/messages';
 const RightSideBar = () => {
 
-const {selectedUser,setselectedUser,getusers,getAllusers}=useMessagesStore()
+const {selectedUser,setselectedUser,getusers,getAllusers,getAllmessages}=useMessagesStore()
 
 if (!selectedUser) return null;
   const navigate=useNavigate()
   const {logout} =useAuth();
   const HandleLogout=async()=>{
       await logout();
-      navigate('/login')
+      navigate('/login',{replace:true})
 }
 
 

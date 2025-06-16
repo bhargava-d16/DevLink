@@ -1,15 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import assets, { messagesDummyData } from '../assets/assets';
 import { formatMessageTime } from '../lib/utils';
 import { useMessagesStore } from '../store/messages';
 import { useAuth } from '../store/useAuth';
+import avatar_icon from '../assets/avatar_icon.png';
+import MessageInput from './messageInput';
+
 
 const ChatContainer = () => {
-
+  
   const scrollEnd = useRef();
-  const {selectedUser,setselectedUser,getmessages,getAllmessages}=useMessagesStore()
-  const {authUser}=useAuth();
-  const yourId = '680f5116f10f3cd28382ed02';
+  const {selectedUser,setselectedUser,getmessages,getAllmessages,sendMessages}=useMessagesStore()
+  const {authUser,onlineUsers}=useAuth();
 
   useEffect(() => {
   const timer = setTimeout(() => {
@@ -19,17 +21,20 @@ const ChatContainer = () => {
   },100);  
   },[selectedUser,messagesDummyData]);
 
+
   useEffect(()=>{
      const fetchMessages=async()=>{
          try{
-          getAllmessages(selectedUser._id);
+          if(selectedUser && selectedUser._id){
+              await getAllmessages(selectedUser._id);
+          }
          }
-         catch{
-           console.error("Error fetching messages:", error);
+         catch(error){
+           console.log("Error fetching messages:", error);
          }
      }
      fetchMessages()
-  },[])
+  },[getAllmessages,selectedUser])
 
 
   return selectedUser ? (
@@ -37,9 +42,9 @@ const ChatContainer = () => {
       
       {/* Top bar (fixed height) */}
       <div className="flex items-center gap-3 py-3 px-4 border-b border-stone-500">
-        <img src={assets.profile_martin} alt="img" className="w-8 rounded-full" />
+        <img src={selectedUser.profilePic || avatar_icon} alt="img" className="w-8 rounded-full" />
         <p className="flex-1 text-lg text-white flex items-center gap-2">
-          Martin Johnson
+          {selectedUser.username}
           <span className="w-2 h-2 rounded-full bg-green-500"></span>
         </p>
         <img
@@ -57,12 +62,12 @@ const ChatContainer = () => {
 
       {/* Middle message scroll area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3"> {/* 🔑 Makes this area scroll */}
-        {messagesDummyData.map((msg, index) => {
-          const isSender = msg.senderId === yourId;
+        {getmessages?.map((msg) => {
+          const isSender = msg.senderId === authUser._id;
 
           return (
             <div
-              key={selectedUser._id}
+              key={msg._id}
               className={`flex items-end gap-2 ${
                 isSender ? 'justify-end' : 'justify-start'
               }`}
@@ -107,7 +112,7 @@ const ChatContainer = () => {
               {/* Right avatar */}
               {isSender && (
                 <img
-                  src={assets.avatar_icon}
+                  src={authUser.profilePic}
                   alt="sender"
                   className="w-7 h-7 rounded-full"
                 />
@@ -117,26 +122,12 @@ const ChatContainer = () => {
         })}
         <div ref={scrollEnd}></div>
       </div>
-
       {/* Bottom input (fixed height) */}
-      <div className="p-3 flex items-center gap-3 ">
-        <div className="flex-1 flex items-center bg-gray-100/12 px-3 rounded-full">
-          <input
-            type="text"
-            placeholder="Send a message"
-            className="flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400 bg-transparent"
-          />
-          <input type="file" id="image" accept="image/png,image/jpeg" hidden />
-          <label htmlFor="image">
-            <img src={assets.gallery_icon} alt="icon" className="w-5 mr-2 cursor-pointer" />
-          </label>
-        </div>
-        <img src={assets.send_button} alt="button" className="w-7 cursor-pointer" />
-      </div>
+      <MessageInput/>
     </div>
   ) : (
     <div className="flex flex-col items-center justify-center gap-2 text-gray-500 bg-white/10 max-md:hidden p-6">
-      <img src={assets.logo_icon} className="max-w-16" alt="logo" />
+      <img src={assets.logo_icon} className=" max-w-16" alt="logo" />
       <p className="text-lg font-medium text-white">Chat Anytime, Anywhere</p>
     </div>
   );

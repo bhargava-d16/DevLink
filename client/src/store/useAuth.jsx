@@ -2,12 +2,12 @@ import {create} from "zustand"
 import { axiosInstance } from "../lib/axios"
 import axios from "axios";
 import toast from "react-hot-toast";
-
 export const useAuth = create((set)=>({
     authUser:null,
     setAuthUser: (user) => set({ authUser: user }),
     isCheckingAuth:true,
     isUpdatingProfile:false,
+    onlineUsers:[],
     checkAuth:async()=>{
         try{
              const response=await axiosInstance.get("/check");

@@ -3,14 +3,13 @@ import { axiosInstance } from "../lib/axios"
 import axios from "axios";
 import toast from "react-hot-toast";
 
-export const useMessagesStore= create((set)=>({
+export const useMessagesStore= create((set,get)=>({
       getusers:null,
       setgetusers :(data)=>set({getusers:data}),
       selectedUser:false,
       setselectedUser:(data)=>set({selectedUser:data}),
       getmessages:null,
       setgetmessages:(data)=>set({getmessages:data}),
-
       getAllusers:async()=>{
         try{
            const response=await axiosInstance.get("/message/users")
@@ -20,15 +19,15 @@ export const useMessagesStore= create((set)=>({
         }
         catch(error){
             console.log(error);
-            toast.success(error.response.data.message)
+            toast.error(error.response.data.message)
         }
       },
 
-      getAllmessages:async(user1,user2)=>{
+      getAllmessages:async(id)=>{
+        
           try{
            const response=await axiosInstance.get(`/message/${id}`,{
-              senderId: user1,
-              receiverId: user2,
+              receiverId: id,
            })
            if(response.data){
                set({getmessages:response.data})
@@ -36,22 +35,23 @@ export const useMessagesStore= create((set)=>({
         }
         catch(error){
             console.log(error);
-            toast.success(error.response.data.message)
+            toast.error(error.response.data.message)
         }
       },
 
-      sendMessages:async(id)=>{
+      sendMessages:async(messageData)=>{
+       const { selectedUser, getmessages } = get();
           try{
-           const response=await axiosInstance.get(`/message/send ${id}`,
-            // {text,image},
+             const response=await axiosInstance.post(`/message/send/${selectedUser._id}`,
+             messageData
            )
            if(response.data){
-               set({getmessages:response.data})
+               set({getmessages:[...getmessages,response.data.message]})
            }
         }
         catch(error){
             console.log(error);
-            toast.success(error.response.data.message)
+            toast.error(error.response.data.message)
         }
       }
 }))

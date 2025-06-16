@@ -3,7 +3,7 @@ const MessageModel = require("../../models/messages");
 const getMessage = async(req,res)=>{
      try{
         // const id=req.params;
-        const {id:usertoChatId} = req.params.id;
+        const usertoChatId = req.params.id;
         const  myId=req.user._id;
 
         const messages=await MessageModel.find({
