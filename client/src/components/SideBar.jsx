@@ -4,10 +4,12 @@ import assets, { userDummyData } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { useMessagesStore } from '../store/messages';
+import { useAuth } from '../store/useAuth';
 const SideBar = () => {
   const navigate = useNavigate();
 
   const {getusers,getAllusers,selectedUser,setselectedUser}=useMessagesStore()
+  const {onlineUsers}=useAuth();
 
    useEffect(()=>{
       const fetchUsers=async()=>{
@@ -65,32 +67,44 @@ return (
 
 
 <div className="flex flex-col mt-4 px-3 gap-3">
-        {getusers?.map((user, index) => (
-  <div
-    key={index}
-    onClick={() => setselectedUser(user)}
-    className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer ${
-      selectedUser?._id === user._id ? 'bg-[#282142]/60' : ''
-    } hover:bg-[#282142]/30`}
-  >
-    <img
-      src={user.profilePic || assets.avatar_icon}
-      className="w-9 h-9 rounded-full object-cover"
-      alt="avatar"
-    />
-    <div className="flex flex-col leading-5">
-      <p className="text-sm font-medium text-white">{user.username}</p>
-      <p className="text-xs text-gray-400">
-        {index < 3 ? 'Active now' : 'Offline'}
-      </p>
+      {getusers?.map((user, index) => {
+         console.log("Online Users List:", onlineUsers); 
+
+  return (
+    <div
+      key={index}
+      onClick={() => setselectedUser(user)}
+      className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer ${
+        selectedUser?._id === user._id ? 'bg-[#282142]/60' : ''
+      } hover:bg-[#282142]/30`}
+    >
+      
+     <div className="relative">
+          <img
+              src={user.profilePic || assets.avatar_icon}
+              className="w-9 h-9 rounded-full object-cover"
+               alt="avatar"
+          />
+         {onlineUsers?.includes(user._id) && (
+         <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-green-500" />
+        )}
     </div>
-    {index > 2 && (
-      <span className="absolute top-4 right-4 text-xs h-5 w-5 flex justify-center items-center rounded-full bg-violet-500 text-white">
-        {index}
-      </span>
-    )}
-  </div>
-))}
+      
+      <div className="flex flex-col leading-5">
+        <p className="text-sm font-medium text-white">{user.username}</p>
+        <p className="text-xs text-gray-400">
+          {onlineUsers?.includes(user._id) ? 'Active now' : 'Offline'}
+        </p>
+      </div>
+      {index > 2 && (
+        <span className="absolute top-4 right-4 text-xs h-5 w-5 flex justify-center items-center rounded-full bg-violet-500 text-white">
+          {index}
+        </span>
+      )}
+    </div>
+  );
+})}
+
 </div>
 
        <div className="flex justify-end p-4 mt-50 ">

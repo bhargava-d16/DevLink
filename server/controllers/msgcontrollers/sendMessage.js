@@ -1,3 +1,4 @@
+const {getReceiverSocketId, io } = require("../../libs/socket");
 const MessageModel = require("../../models/messages");
 const cloudinary=require('cloudinary')
 const sendMessage = async(req,res)=>{
@@ -24,12 +25,11 @@ const sendMessage = async(req,res)=>{
                message: savedMessage,
            });
           
-          //socket.io 
-
-
-          
+          const receiverSocketId=getReceiverSocketId(receiverId);
+          if(receiverSocketId){
+             io.to(receiverSocketId).emit("newMessage",newMessage);
+          }
         }
-      
         catch (error) {
               console.error("Send Message Error:", error);  
         }

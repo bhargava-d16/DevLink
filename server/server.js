@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const express=require("express");
-const app=express();
+
 const cors = require('cors');
 const PORT=process.env.PORT || 8080;
 const bodyParser=require('body-parser');
@@ -11,6 +11,7 @@ const Authroutes =require("./routes/authRoutes");
 const cookieParser = require("cookie-parser");
 const messageRoutes = require("./routes/messageroutes");
 
+const {app,io,server}=require("./libs/socket")
 
 const startServer = async () => {
   try {
@@ -37,6 +38,6 @@ app.use(cors({
 app.use("/api",Authroutes)
 app.use("/api/message",messageRoutes)
 
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
     console.log(`Server running on port ${PORT}`)
 })

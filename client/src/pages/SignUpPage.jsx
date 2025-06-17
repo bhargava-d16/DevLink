@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import assets from "../assets/assets";
 import { useNavigate } from "react-router-dom";
@@ -8,42 +8,13 @@ import { axiosInstance } from "../lib/axios";
 import { useAuth } from "../store/useAuth";
 
 const SignUpPage = () => {
-  // const { loginWithPopup, logout, user, isAuthenticated } = useAuth0();
+  
   const navigate = useNavigate();
-  const { setAuthUser } = useAuth();
+  const { authUser,setAuthUser ,connectSocket,signup} = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  // const handleSignIn=async (provider) => {
-  // try {
-  //   await loginWithPopup({ connection: provider });
-  //   // if(user && isAuthenticated){
-  //   //      saveOAuthUser(user);
-  //   // }
-  //   // toast.success("Login successfull")
-  //   navigate('/');
-  // } catch (err) {
-  //   toast.error("Login failed");
-  // }
-  // };
-
-  // const saveOAuthUser=async(user)=>{
-  //      try{
-  //          const response=await axios.post("http://localhost:8080/api/auth0-signUp",
-  //           {
-  //             username:user.name,
-  //             email:user.email,
-  //             password:user.password,
-  //             provider: user.sub.split('|')[0],
-  //           }
-  //          )
-  //      }
-  //      catch(error){
-  //         toast.error("Login failed");
-  //      }
-  // }
-
+  
   const usernameChange = (e) => {
     setUsername(e.target.value);
   };
@@ -55,33 +26,17 @@ const SignUpPage = () => {
   const passwordChange = (e) => {
     setPassword(e.target.value);
   };
+  
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axiosInstance.post(
-        "/signUp",
-        { username, email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.data) {
-        console.log(response.data);
-        setAuthUser(response.data);
-        toast.success("Sign Up successfull");
-        navigate("/home");
-      }
-    } catch (error) {
-      if (error.response) {
-        toast.error(error.response.data.message || "Login failed");
-      } else if (error.request) {
-        toast.error("No response from the server.Please check your connection");
-      } else {
-        toast.error("An unexpected error occured.Please try again");
-      }
+    await signup({
+        username: username,
+        email: email,
+        password: password
+    });
+    if(signup){
+      navigate("/home")
     }
   };
 
@@ -135,27 +90,6 @@ const SignUpPage = () => {
           <button className="w-full px-4 py-3 mt-2 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-xl opacity-50">
             Sign Up
           </button>
-
-          {/* <div className="text-gray-400 text-sm">or continue with</div> */}
-
-          {/* Social Buttons Side-by-side */}
-          {/* <div className="flex flex-col sm:flex-row sm:justify-center gap-4">
-          <button
-            onClick={() => handleSignIn('google-oauth2')}
-            className="flex-1 flex items-center justify-center gap-3 px-4 py-3 bg-white text-black font-medium rounded-xl shadow hover:bg-gray-100 transition"
-          >
-            <img src={assets.google} alt="Google" className="w-6 h-6" />
-            Google
-          </button>
-
-          <button
-            onClick={() => handleSignIn('github')}
-            className="flex-1 flex items-center justify-center gap-3 px-4 py-3 bg-[#333] text-white font-medium rounded-xl shadow hover:bg-[#222] transition"
-          >
-            <img src={assets.github} alt="GitHub" className="w-7 h-7" />
-            GitHub
-          </button>
-        </div> */}
 
           <div className="text-l text-gray-400 mt-6">
             Already have an account?{" "}

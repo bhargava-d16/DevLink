@@ -9,7 +9,6 @@ import { useAuth } from './store/useAuth';
 import { Loader } from 'lucide-react';
 
 const App = () => {
-  
   return (
     <div className="relative min-h-screen">
       

@@ -4,7 +4,7 @@ import { useAuth } from '../store/useAuth';
 import avatar_icon from '../assets/avatar_icon.png';
 import toast from 'react-hot-toast';
 const ProfilePage = () => {
-  const { authUser,updateProfile,checkAuth,isCheckingAuth} = useAuth();
+  const { authUser,updateProfile,checkAuth,isCheckingAuth,onlineUsers} = useAuth();
   const [selectedImg, setSelectedImg] = useState(null);
   
     useEffect(() => {

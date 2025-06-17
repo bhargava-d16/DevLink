@@ -2,14 +2,17 @@ import {create} from "zustand"
 import { axiosInstance } from "../lib/axios"
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAuth } from "./useAuth";
 
 export const useMessagesStore= create((set,get)=>({
-      getusers:null,
+      getusers:[],
       setgetusers :(data)=>set({getusers:data}),
       selectedUser:false,
       setselectedUser:(data)=>set({selectedUser:data}),
-      getmessages:null,
+      getmessages:[],
       setgetmessages:(data)=>set({getmessages:data}),
+
+
       getAllusers:async()=>{
         try{
            const response=await axiosInstance.get("/message/users")
@@ -53,5 +56,22 @@ export const useMessagesStore= create((set,get)=>({
             console.log(error);
             toast.error(error.response.data.message)
         }
-      }
+      },
+
+      listentoMessages:()=>{
+           const {selectedUser}=get();
+           if(!selectedUser) return;
+
+           const socket=useAuth.getState().socket;
+
+           socket.on("newMessage",(newMessage)=>{
+               set({getmessages:[...get().getmessages,newMessage],
+              })
+           })
+      },
+
+      stopListening:()=>{
+          const socket=useAuth.getState().socket;
+          socket.off("newMessage");
+      },
 }))

@@ -8,6 +8,7 @@ import { useMessagesStore } from '../store/messages';
 const RightSideBar = () => {
 
 const {selectedUser,setselectedUser,getusers,getAllusers,getAllmessages}=useMessagesStore()
+const {onlineUsers}=useAuth();
 
 if (!selectedUser) return null;
   const navigate=useNavigate()
@@ -31,8 +32,8 @@ if (!selectedUser) return null;
           className="w-20 aspect-square rounded-full border-2 border-white/20 shadow-md"
         />
         <h1 className="text-xl font-medium flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-green-500"></span>
-          {selectedUser.fullName}
+          {onlineUsers?.includes(selectedUser._id) && (<span className="w-2 h-2 rounded-full bg-green-500"></span>)}
+          {selectedUser.username}
         </h1>
         <p className="text-sm opacity-75 px-6">{selectedUser.bio}</p>
       </div>

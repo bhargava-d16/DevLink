@@ -10,16 +10,13 @@ import MessageInput from './messageInput';
 const ChatContainer = () => {
   
   const scrollEnd = useRef();
-  const {selectedUser,setselectedUser,getmessages,getAllmessages,sendMessages}=useMessagesStore()
+  const {selectedUser,setselectedUser,getmessages,getAllmessages,listentoMessages,stopListening}=useMessagesStore()
   const {authUser,onlineUsers}=useAuth();
-
   useEffect(() => {
-  const timer = setTimeout(() => {
     if (scrollEnd.current) {
       scrollEnd.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  },100);  
-  },[selectedUser,messagesDummyData]);
+    } 
+  },[getmessages]);
 
 
   useEffect(()=>{
@@ -27,13 +24,18 @@ const ChatContainer = () => {
          try{
           if(selectedUser && selectedUser._id){
               await getAllmessages(selectedUser._id);
+              listentoMessages();
           }
          }
          catch(error){
            console.log("Error fetching messages:", error);
          }
      }
-     fetchMessages()
+     fetchMessages();
+
+      return () => { 
+        stopListening(); 
+      };
   },[getAllmessages,selectedUser])
 
 
@@ -45,7 +47,9 @@ const ChatContainer = () => {
         <img src={selectedUser.profilePic || avatar_icon} alt="img" className="w-8 rounded-full" />
         <p className="flex-1 text-lg text-white flex items-center gap-2">
           {selectedUser.username}
-          <span className="w-2 h-2 rounded-full bg-green-500"></span>
+          {onlineUsers?.includes(selectedUser._id) && (
+            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+          )}
         </p>
         <img
           onClick={() => setselectedUser(null)}
@@ -63,6 +67,7 @@ const ChatContainer = () => {
       {/* Middle message scroll area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3"> {/* 🔑 Makes this area scroll */}
         {getmessages?.map((msg) => {
+           if (!authUser) return null; 
           const isSender = msg.senderId === authUser._id;
 
           return (
@@ -75,7 +80,7 @@ const ChatContainer = () => {
               {/* Left avatar */}
               {!isSender && (
                 <img
-                  src={assets.profile_martin}
+                  src={selectedUser.profilePic || avatar_icon}
                   alt="receiver"
                   className="w-7 h-7 rounded-full"
                 />
@@ -112,7 +117,7 @@ const ChatContainer = () => {
               {/* Right avatar */}
               {isSender && (
                 <img
-                  src={authUser.profilePic}
+                  src={authUser.profilePic || avatar_icon}
                   alt="sender"
                   className="w-7 h-7 rounded-full"
                 />
