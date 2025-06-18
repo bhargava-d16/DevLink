@@ -72,6 +72,8 @@ export const useMessagesStore= create((set,get)=>({
 
       stopListening:()=>{
           const socket=useAuth.getState().socket;
-          socket.off("newMessage");
+          if (socket) {
+                socket.off("newMessage");
+          }
       },
 }))

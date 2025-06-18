@@ -7,6 +7,7 @@ import SignUpPage from './pages/SignUpPage';
 import { Toaster , toast} from 'react-hot-toast';
 import { useAuth } from './store/useAuth';
 import { Loader } from 'lucide-react';
+import CodeEditor from './pages/CodeEditor';
 
 const App = () => {
   return (
@@ -22,9 +23,10 @@ const App = () => {
           <Route path="/" element={<SignUpPage />} />
           <Route path="/home" element={<HomePage/>} />
           <Route path="/profile" element={<ProfilePage/>}/>
+          <Route path="/codeeditor" element={<CodeEditor/>}/>
         </Routes>
       </div>
-    </div>
+    </div> 
   );
 };
 

@@ -6,11 +6,10 @@ const cors = require('cors');
 const PORT=process.env.PORT || 8080;
 const bodyParser=require('body-parser');
 const { connectDB } = require("./libs/db");
-// const router =require("./routes/authRoutes")
 const Authroutes =require("./routes/authRoutes");
 const cookieParser = require("cookie-parser");
 const messageRoutes = require("./routes/messageroutes");
-
+const codeEditorRoutes = require("./routes/codeEditorRoutes");
 const {app,io,server}=require("./libs/socket")
 
 const startServer = async () => {
@@ -37,6 +36,7 @@ app.use(cors({
 
 app.use("/api",Authroutes)
 app.use("/api/message",messageRoutes)
+app.use("/api",codeEditorRoutes);
 
 server.listen(PORT,()=>{
     console.log(`Server running on port ${PORT}`)
