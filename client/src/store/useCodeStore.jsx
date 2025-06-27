@@ -28,8 +28,8 @@ export const useCodeStore= create((set,get)=>({
 
            setFileContent: (filePath, content) =>
                 set((state) => ({
-                    fileContent: {
-                      ...state.fileContent,
+                    fileContents: {
+                      ...state.fileContents,
                       [filePath]: content,
                    },
             })),
