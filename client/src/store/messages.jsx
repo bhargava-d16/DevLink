@@ -5,25 +5,48 @@ import toast from "react-hot-toast";
 import { useAuth } from "./useAuth";
 
 export const useMessagesStore= create((set,get)=>({
-      getusers:[],
-      setgetusers :(data)=>set({getusers:data}),
+      chattedUsers: [],   
+      setchattedUsers :(data)=>set({chattedUsers:data}),
+      searchResults: [],
+      setsearchResults :(data)=>set({searchResults:data}),
+      clearSearchResults: () => set({ searchResults: [] }),
       selectedUser:false,
       setselectedUser:(data)=>set({selectedUser:data}),
       getmessages:[],
       setgetmessages:(data)=>set({getmessages:data}),
 
 
-      getAllusers:async()=>{
+      fetchChattedUsers:async()=>{
         try{
-           const response=await axiosInstance.get("/message/users")
+           const response=await axiosInstance.get("/message/chatted-users")
            if(response.data){
-               set({getusers:response.data})
+               set({chattedUsers:response.data})
            }
         }
         catch(error){
             console.log(error);
             toast.error(error.response.data.message)
         }
+      },
+
+      searchUsers:async (query)=>{
+          try{
+            if(!query) {
+              set({searchResults:[]});
+              return;
+            }
+            const res=await axiosInstance.get(`/message/search?query=${query}`);
+            set({searchResults:res.data});
+          }
+          catch{
+             console.log(error);
+          }
+      },
+
+      addToChattedUsers: (newUser) => {
+          const { chattedUsers } = get();
+          const updated = chattedUsers.filter(user => user._id !== newUser._id);
+          set({ chattedUsers: [newUser, ...updated] });
       },
 
       getAllmessages:async(id)=>{

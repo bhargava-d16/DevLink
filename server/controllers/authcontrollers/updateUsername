@@ -1,0 +1,20 @@
+const UserModel = require("../../models/users");
+
+const updateUsername = async(req,res)=>{
+     try{
+          const newUsername=req.body.username;
+          const userId=req.user._id;
+
+          if(!newUsername){
+            return res.status(400).json({message:"New username is required"});
+          }
+          const update=await UserModel.findByIdAndUpdate(userId,{username:newUsername},{new:true})
+          res.status(200).json(update);
+     }
+     catch(error){
+        console.log(error);
+        res.status(500).json({message:"Internal Server Error"})
+     }
+}
+
+module.exports=updateUsername;

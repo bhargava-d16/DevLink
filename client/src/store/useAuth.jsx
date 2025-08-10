@@ -76,6 +76,7 @@ export const useAuth = create((set, get) => ({
       setTimeout(() => get().connectSocket(), 100);
     } catch (error) {
       toast.error(error.response.data.message);
+      throw error;
     } finally {
       set({ isLoggingIn: false });
     }
@@ -105,6 +106,39 @@ export const useAuth = create((set, get) => ({
       set({ isUpdatingProfile: false });
     }
   },
+
+  updateEmail: async(data)=>{
+     set ({isUpdatingEmail:true});
+     try{
+         const response=await axiosInstance.put("/update-email",data);
+         set({authUser:response.data});
+         toast.success("Email updated Successfully")
+     }
+     catch(error){
+         console.log(error);
+         toast.error(error.response.data.message);
+     }
+     finally{
+         set({isUpdatingEmail:false});
+     }
+  },
+
+  updateUsername: async(data)=>{
+       set ({isUpdatingUsername:true});
+     try{
+         const response=await axiosInstance.put("/update-username",data);
+         set({authUser:response.data});
+         toast.success("Username updated Successfully")
+     }
+     catch(error){
+         console.log(error);
+         toast.error(error.response.data.message);
+     }
+     finally{
+         set({isUpdatingUsername:false});
+     }
+  },
+
 
   disconnectSocket: () => {
     const socket = get().socket;

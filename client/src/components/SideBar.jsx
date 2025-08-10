@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import assets, { userDummyData } from '../assets/assets';
 
 import { useNavigate } from 'react-router-dom';
@@ -8,13 +8,14 @@ import { useAuth } from '../store/useAuth';
 const SideBar = () => {
   const navigate = useNavigate();
 
-  const {getusers,getAllusers,selectedUser,setselectedUser}=useMessagesStore()
+  const {getusers,fetchChattedUsers,selectedUser,setselectedUser,searchResults,searchUsers,chattedUsers,setchattedUsers,setsearchResults}=useMessagesStore()
   const {onlineUsers}=useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
 
    useEffect(()=>{
       const fetchUsers=async()=>{
       try {
-         await getAllusers(selectedUser._id);
+         await fetchChattedUsers();
       }
       catch (error) {
          console.error("Error fetching users:", error);
@@ -22,6 +23,15 @@ const SideBar = () => {
       }
       fetchUsers()
    },[])
+
+   const handleSearch=(e)=>{
+      const value = e.target.value;
+      setSearchQuery(value);
+      searchUsers(value);
+    };
+
+   const usersToShow = searchResults.length > 0 ? searchResults : chattedUsers;
+
 return (
  <div className='flex flex-col h-full overflow-y-auto'>
    <div className="flex justify-between items-center px-3">
@@ -57,7 +67,8 @@ return (
       <div className="bg-[#282142] rounded-full flex items-center gap-2 py-3 px-4 mt-5 mx-3 shadow-inner border border-gray-600">
         <img src={assets.search_icon} alt="search" className="w-4" />
         <input
-          
+          onChange={handleSearch}
+          value={searchQuery}
           type="text"
           placeholder="Search"
           className="bg-transparent border-none outline-none text-white text-sm placeholder:text-[#c8c8c8] w-full"
@@ -67,13 +78,20 @@ return (
 
 
 <div className="flex flex-col mt-4 px-3 gap-3">
-      {getusers?.map((user, index) => {
+      {usersToShow?.map((user, index) => {
          console.log("Online Users List:", onlineUsers); 
 
   return (
     <div
       key={index}
-      onClick={() => setselectedUser(user)}
+      onClick={() => {
+      setselectedUser(user);
+      const exists = chattedUsers.find(u => u._id === user._id);
+      const updated = exists ? [user, ...chattedUsers.filter(u => u._id !== user._id)]: [user, ...chattedUsers];
+      setchattedUsers(updated);
+      setsearchResults([]);
+      setSearchQuery("");
+}}
       className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer ${
         selectedUser?._id === user._id ? 'bg-[#282142]/60' : ''
       } hover:bg-[#282142]/30`}
@@ -106,15 +124,6 @@ return (
 })}
 
 </div>
-
-       <div className="flex justify-end p-4 mt-50 ">
-        <button
-          className="w-12 h-12 flex items-center justify-center bg-violet-600 hover:bg-violet-700 text-white rounded-full shadow-lg transition duration-200"
-          onClick={() => alert("Add user")}
-        >
-          <Plus size={24} />
-        </button>
-      </div>
       
 </div>
   );
