@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export const axiosInstance=axios.create({
-    baseURL:"http://localhost:8080/api",
+    baseURL:"https://devlink-7v35.onrender.com",
     withCredentials:true,
 })
