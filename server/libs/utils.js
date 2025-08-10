@@ -9,7 +9,7 @@ const generateToken = (userId,res)=>{
         maxAge:7*24*60*64*1000,
         httpOnly:true,
         sameSite:"None",
-        secure:false,
+        secure:true,
     })
     return token
 }
