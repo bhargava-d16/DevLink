@@ -4,7 +4,7 @@ import { formatMessageTime } from '../lib/utils';
 import { useMessagesStore } from '../store/messages';
 import { useAuth } from '../store/useAuth';
 import avatar_icon from '../assets/avatar_icon.png';
-import MessageInput from './messageInput';
+import MessageInput from './MessageInput';
 
 
 const ChatContainer = () => {
