@@ -5,63 +5,56 @@ import toast from "react-hot-toast";
 import { useMessagesStore } from "../store/messages";
 
 const MessageInput = () => {
-
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef();
-  const {sendMessages}=useMessagesStore();
+  const { sendMessages } = useMessagesStore();
 
   const handleImageChange = (e) => {
-    
-       const file=e.target.files[0];
-       if(!file.type.startsWith("image")){
-          toast.error("Please select an image file")
-          return;
-       }
-       const reader=new FileReader();
-       reader.onloadend=()=>{
-         setImagePreview(reader.result);
-       }
-       reader.readAsDataURL(file);
+    const file = e.target.files[0];
+    if (!file.type.startsWith("image")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleSendMessages = async(e) => { 
-         e.preventDefault();
-         if(!imagePreview && !text.trim()) return ;
-         try{
-            await sendMessages(
-                {text:text.trim(),
-                 image:imagePreview
-                }
-            )
-            setText("");
-            setImagePreview(null);
-            if(fileInputRef.current.value) fileInputRef.current.value=""
-         }
-         catch(error){
-           toast.error("Network Error: " + error.message);
-        }
+  const handleSendMessages = async (e) => {
+    e.preventDefault();
+    if (!imagePreview && !text.trim()) return;
+    try {
+      await sendMessages({ text: text.trim(), image: imagePreview });
+      setText("");
+      setImagePreview(null);
+      if (fileInputRef.current.value) fileInputRef.current.value = "";
+    } catch (error) {
+      toast.error("Network Error: " + error.message);
+    }
   };
 
   const removeImage = () => {
-      setImagePreview(null);
-      if(fileInputRef.current.value) fileInputRef.current.value=""
+    setImagePreview(null);
+    if (fileInputRef.current.value) fileInputRef.current.value = "";
   };
 
   return (
     <div className="p-3 flex items-center gap-3 border-t border-gray-700">
       <div className="flex-1 flex items-center bg-gray-100/10 px-3 rounded-full">
         {imagePreview && (
-          <div>
-            <div className="relative">
+          <div className="inline-block">
+            <div className="relative inline-block">
               <img
                 src={imagePreview}
                 alt="Preview"
-                className="w-16 h-16 object-cover rounded-lg border border-zinc-700"
+                className="w-12 h-12 object-cover rounded-md border border-zinc-600 shadow-sm"
               />
               <button
                 onClick={removeImage}
-                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-gray-800 text-white flex items-center justify-center"
+                className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-red-600 transition"
                 type="button"
               >
                 <X className="w-3 h-3" />
@@ -69,6 +62,7 @@ const MessageInput = () => {
             </div>
           </div>
         )}
+
         <input
           type="text"
           placeholder="Send a message"
@@ -85,12 +79,20 @@ const MessageInput = () => {
           onChange={handleImageChange}
         />
         <label htmlFor="image">
-          <img src={assets.gallery_icon} alt="icon" className="w-5 mr-2 cursor-pointer" />
+          <img
+            src={assets.gallery_icon}
+            alt="icon"
+            className="w-5 mr-2 cursor-pointer"
+          />
         </label>
       </div>
-       <button type="button" onClick={handleSendMessages}>
-            <img src={assets.send_button} alt="Send" className="w-7 cursor-pointer"/>
-       </button>
+      <button type="button" onClick={handleSendMessages}>
+        <img
+          src={assets.send_button}
+          alt="Send"
+          className="w-7 cursor-pointer"
+        />
+      </button>
     </div>
   );
 };

@@ -49,44 +49,39 @@ export const isReady=async({type,file,url,})=>{
         console.log(error);
     }
   }
-  else if(type=="github" && url){
+else if (type === "github" && url) {
+  try {
+    const toastId = toast.loading("Extracting project files");
+    const response = await axiosInstance.post("/extractinfo", { url });
 
-      try{
-        const toastId=toast.loading("Extracting project files");
-        const response=await axiosInstance.post("/extractinfo",{url});
-         
-        if(response.data){
-           console.log(response.data);
-           const files = response.data.files;
-           toast.success("Extraction successfull",{id:toastId});
+    console.log("GitHub API response:", response.data); // 👈 check structure
 
-       
-        if (!files || typeof files !== 'object') {
-            return;
-        }
-        if(response.data && response.data.files!=null){
-          Object.entries(files).forEach(([filePath, content]) => {
-             store.setFileContent(filePath, content);
-          }
-        )}
-        else {
-           toast.error("No files found in response.");
-        }
+    const files = response.data?.files;
 
-     
+    if (files && Object.keys(files).length > 0) {
+      Object.entries(files).forEach(([filePath, content]) => {
+        store.setFileContent(filePath, content);
+      });
+
       const tree = buildFolderTree(files);
-      store.setfileTree(tree);
+      store.setFileTree(tree);
 
-      
-      const defaultFile = Object.keys(files).find(f => f.includes("index.js")) || Object.keys(files)[0];
-      store.openFile(defaultFile);
+      const fileKeys = Object.keys(files);
+      if (fileKeys.length > 0) {
+        const defaultFile = fileKeys.find(f => f.includes("index.js")) || fileKeys[0];
+        store.openFile(defaultFile);
+      }
 
-      }
-      }
-      catch(error){
-        console.log(error);
-      }
+      toast.success("Extraction successful", { id: toastId });
+    } else {
+      toast.error("No files found in response.", { id: toastId });
+    }
+  } catch (error) {
+    console.log("GitHub extraction error:", error);
+    toast.error("Extraction failed");
   }
+}
+
 
 }
 
