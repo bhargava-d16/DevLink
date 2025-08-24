@@ -25,7 +25,7 @@ const extractInfo=async (req,res) => {
            }
           });
           await Promise.all(filePromises);
-          res.json(files);
+          res.json({files});
         }
         catch (error) {
           console.error("GitHub fetch error:", error);
