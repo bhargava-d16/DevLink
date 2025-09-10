@@ -25,6 +25,20 @@ io.on("connection",(socket)=>{
    
     io.emit("getOnlineUsers",Object.keys(userSocketMap))
     console.log(userSocketMap)
+
+     socket.on("file-changed", ({ path, content }) => {
+        console.log(`File changed: ${path}`);
+       
+        socket.broadcast.emit("file-changed", { path, content });
+    });
+
+    
+    socket.on("open-file", (path) => {
+        console.log(`File opened: ${path}`);
+        socket.broadcast.emit("open-file", path);
+    });
+
+
     socket.on("disconnect",()=>{
         console.log("A user disconnected",socket.id);
         delete userSocketMap[userId];

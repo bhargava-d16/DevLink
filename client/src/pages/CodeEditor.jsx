@@ -3,6 +3,7 @@ import Editor from "@monaco-editor/react";
 import { useCodeStore } from "../store/useCodeStore";
 import FileTree from "../components/FileTree";
 import { Play, Terminal, Settings, Save, Maximize2, Minimize2, Square } from "lucide-react";
+import { useAuth } from "../store/useAuth";
 
 // Judge0 API Configuration
 const JUDGE0_API_URL = "https://judge0-ce.p.rapidapi.com";
@@ -152,8 +153,37 @@ export default function CodeEditor() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showInputModal, setShowInputModal] = useState(false);
   const [executionToken, setExecutionToken] = useState(null);
+  const { socket } = useAuth();
 
   const currentPath = "~/workspace";
+  
+
+  const handleEditorChange = (value) => {
+    if (activeFile) {
+      setFileContent(activeFile, value || "");
+      if (socket) {
+        socket.emit("file-changed", { path: activeFile, content: value });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("file-changed", ({ path, content }) => {
+      setFileContent(path, content);
+    });
+
+    socket.on("open-file", (path) => {
+      console.log("Collaborator opened:", path);
+    });
+
+    return () => {
+      socket.off("file-changed");
+      socket.off("open-file");
+    };
+  }, [socket, setFileContent]);
+
 
   const language = useMemo(() => {
     if (!activeFile) return "plaintext";
@@ -178,9 +208,7 @@ export default function CodeEditor() {
 
   const fileValue = activeFile ? fileContents[activeFile] : "// Welcome to Code Editor\n// Select a file to start coding!";
 
-  const handleEditorChange = (value) => {
-    if (activeFile) setFileContent(activeFile, value);
-  };
+
 
   const addToTerminal = (message, type = "info") => {
     setTerminalOutput(prev => [...prev, `[${type.toUpperCase()}] ${message}`]);

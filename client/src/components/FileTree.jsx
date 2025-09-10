@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useCodeStore } from "../store/useCodeStore";
+import { useAuth } from "../store/useAuth";
 
 const FileTree = () => {
   const { fileTree, openFile, activeFile } = useCodeStore();
   const [expanded, setExpanded] = useState(new Set());
+  const { socket } = useAuth();
 
   const toggleFolder = (path) => {
     const newSet = new Set(expanded);
@@ -13,6 +15,13 @@ const FileTree = () => {
       newSet.add(path);
     }
     setExpanded(newSet);
+  };
+
+  const handleOpenFile = (fullPath) => {
+    openFile(fullPath);
+    if (socket) {
+      socket.emit("open-file", fullPath); 
+    }
   };
 
   const renderTree = (tree, parentPath = "", depth = 0) => {
@@ -25,7 +34,7 @@ const FileTree = () => {
         <div key={fullPath}>
           {isFile ? (
             <div
-              onClick={() => openFile(fullPath)}
+              onClick={() => handleOpenFile(fullPath)}
               className={`pl-${depth * 4} py-1 cursor-pointer hover:bg-gray-700 ${
                 activeFile === fullPath ? "bg-gray-800" : ""
               }`}
